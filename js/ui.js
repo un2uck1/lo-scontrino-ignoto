@@ -31,26 +31,24 @@ export const UI = {
         if (dateEl) dateEl.textContent = `${dateStr} ${timeStr}`;
         if (numEl) numEl.textContent = `RT ${storeId} #${transId}`;
 
+        // HIDE PRICES! The user has to guess the total.
         this.elements.receiptList.innerHTML = items.map(i => `
             <div class="flex">
                 <span>${i.name}</span>
-                <span>${i.qty > 1 ? `x${i.qty}` : ''} ${(i.priceCents / 100).toFixed(2)}</span>
+                <span>${i.qty > 1 ? `x${i.qty}` : ''} ?. ??</span>
             </div>
         `).join('');
 
-        const total = items.reduce((acc, item) => acc + item.priceCents, 0);
-        const taxBase = Math.round(total / 1.22);
-        const tax = total - taxBase;
-
+        // Hide Tax/Subtotal so users don't cheat by adding them up
         this.elements.receiptList.innerHTML += `
             <div class="receipt-divider"></div>
             <div class="flex" style="opacity: 0.7; font-size: 0.6rem;">
                 <span>IMPONIBILE</span>
-                <span>${(taxBase / 100).toFixed(2)}</span>
+                <span>??.??</span>
             </div>
             <div class="flex" style="opacity: 0.7; font-size: 0.6rem;">
                 <span>IVA 22%</span>
-                <span>${(tax / 100).toFixed(2)}</span>
+                <span>??.??</span>
             </div>
             <div class="receipt-divider" style="margin-bottom: 0;"></div>
         `;
