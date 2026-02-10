@@ -78,7 +78,7 @@
             <div class="receipt-footer">
                 <div class="total-label">TOTALE DA INDOVINARE</div>
                 <div class="receipt-icon">🧾</div>
-                <button id="hint-btn" class="hint-button" onclick="showHint()">💡 SUGGERIMENTO</button>
+                <button id="hint-btn" class="hint-button hidden" onclick="showHint()">💡 SUGGERIMENTO</button>
                 <div id="hint-text" class="hint-text hidden"></div>
                 <div class="receipt-thanks">Buona Fortuna!</div>
             </div>
@@ -105,29 +105,7 @@
         </div>
     </div>
 
-    <!-- On-screen Keypad -->
-    <div id="keypad">
-        <div class="key-row">
-            <button class="key" data-key="1">1</button>
-            <button class="key" data-key="2">2</button>
-            <button class="key" data-key="3">3</button>
-        </div>
-        <div class="key-row">
-            <button class="key" data-key="4">4</button>
-            <button class="key" data-key="5">5</button>
-            <button class="key" data-key="6">6</button>
-        </div>
-        <div class="key-row">
-            <button class="key" data-key="7">7</button>
-            <button class="key" data-key="8">8</button>
-            <button class="key" data-key="9">9</button>
-        </div>
-        <div class="key-row">
-            <button class="key big-key" data-key="DEL">DEL</button>
-            <button class="key" data-key="0">0</button>
-            <button class="key big-key" data-key="ENTER">ENTER</button>
-        </div>
-    </div>
+    <!-- KEYPAD REMOVED -->
 
     <!-- Modals -->
     <!-- Info Modal -->
@@ -139,10 +117,8 @@
                 <h1>Scontrino Ignoto</h1>
                 <hr class="border-gray-300 my-2">
                 <p>Indovina il PREZZO SCONTRINO in 5 tentativi.</p>
-                <p>Ogni tentativo deve essere un prezzo valido.
-                    Premi il tasto ENTER per inviare.
-                </p>
-                <p>Dopo l'invio, il colore delle celle cambierà come negli esempi seguenti.</p>
+                <p>Usa la tua tastiera fisica per digitare.</p>
+                <p>Premi <strong>INVIO</strong> per confermare.</p>
 
                 <div class="examples">
                     <p><strong>Esempi</strong></p>
@@ -166,7 +142,7 @@
                             <div class="small-tile">5</div>
                             <div class="small-tile">0</div>
                         </div>
-                        <p>Il prezzo segreto è <strong>PIÙ BASSO</strong> di quello inserito.</p>
+                        <p>Il prezzo segreto è <strong>PIÙ BASSO</strong>.</p>
                     </div>
 
                     <div class="example">
@@ -227,7 +203,7 @@
             <div id="next-timer" class="text-2xl font-mono mb-4">DOMANI</div>
 
             <button onclick="resetGame()" class="w-full bg-black text-white font-bold py-3 uppercase text-sm">
-                GIOCA ANCORA (Debug)
+                GIOCA ANCORA
             </button>
         </div>
     </div>

@@ -8,16 +8,14 @@
     --color-text-subtle: #6b7280;
     --bg-color: #f3f4f6;
 
-    /* Keypad */
-    --key-bg: #ffffff;
-    --key-text: #111827;
-    --key-active: #e5e7eb;
-    --key-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-
     /* Receipt */
     --receipt-bg: #ffffff;
     --receipt-text: #374151;
     --receipt-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+    /* Keypad Colors - REMOVED but defined for tiles */
+    --key-bg: #ffffff;
+    --key-text: #111827;
 }
 
 body.dark-mode {
@@ -25,14 +23,11 @@ body.dark-mode {
     --color-text-subtle: #9ca3af;
     --bg-color: #111827;
 
-    --key-bg: #1f2937;
-    --key-text: #f9fafb;
-    --key-active: #374151;
-    --key-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-
     --receipt-bg: #1f2937;
     --receipt-text: #d1d5db;
     --receipt-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+
+    --key-bg: #1f2937;
 }
 
 * {
@@ -95,14 +90,15 @@ body.dark-mode header button:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Game Container */
+/* Game Container - Centered and clean */
 #game-container {
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 10px 20px 20px;
-    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+    gap: 40px;
     overflow-y: auto;
     scrollbar-width: none;
 }
@@ -251,59 +247,9 @@ body.dark-mode .tile[data-state='active'] {
 
 /* Arrow size */
 
-/* ==== KEYPAD ==== */
+/* ==== KEYPAD REMOVED ==== */
 #keypad {
-    width: 100%;
-    max-width: 480px;
-    margin: auto auto 0;
-    padding: 15px 20px 30px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.key-row {
-    display: flex;
-    gap: 12px;
-    width: 100%;
-}
-
-.key {
-    flex: 1;
-    height: 60px;
-    border: none;
-    border-radius: 16px;
-    background: var(--key-bg);
-    color: var(--key-text);
-    font-size: 1.5rem;
-    font-weight: 500;
-    cursor: pointer;
-    box-shadow: var(--key-shadow);
-    transition: transform 0.1s, background-color 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-}
-
-.key:active {
-    transform: scale(0.95);
-    background: var(--key-active);
-}
-
-/* Special Keys */
-.key[data-key="ENTER"] {
-    background: var(--color-text);
-    color: var(--bg-color);
-    font-size: 1rem;
-    font-weight: 700;
-    text-transform: uppercase;
-}
-
-.key[data-key="DEL"] {
-    color: var(--color-error);
-    font-size: 1.2rem;
+    display: none;
 }
 
 /* Modals */
@@ -452,9 +398,5 @@ body.dark-mode .tile[data-state='active'] {
 
     #receipt-preview {
         padding: 20px 20px 30px;
-    }
-
-    .key {
-        height: 50px;
     }
 }
