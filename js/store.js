@@ -1,26 +1,33 @@
 // State Management
-const STATE_KEY = 'wordle_scontrino_store_v1';
+const STATE_KEY = 'wordle_scontrino_arcade_v1';
 
 const defaultState = {
-    status: 'PLAYING', // PLAYING, WON, LOST
+    // Game Status
+    status: 'IDLE', // IDLE, PLAYING, ROUND_WON, ROUND_LOST, GAME_OVER, GAME_WON
+
+    // Progression
+    currentRound: 1, // 1 to 5
+    totalRounds: 5,
+    score: 0,
+    roundsData: [], // Array of level IDs for this run
+
+    // Current Level State
     grid: ["", "", "", "", ""],
     currentRow: 0,
     currentGuess: "",
     secretPrice: 0,
     secretLevelId: null,
+
+    // Stats (Global Lifetime)
     stats: {
-        played: 0,
-        wins: 0,
-        streak: 0,
-        maxStreak: 0,
-        distribution: [0, 0, 0, 0, 0] // Track wins by attempt count
-    },
-    lastPlayed: null
+        playedRuns: 0,
+        highScore: 0
+    }
 };
 
 class Store {
     constructor() {
-        this.state = JSON.parse(JSON.stringify(defaultState)); // Deep copy
+        this.state = JSON.parse(JSON.stringify(defaultState));
         this.load();
     }
 
@@ -29,20 +36,12 @@ class Store {
             const stored = localStorage.getItem(STATE_KEY);
             if (stored) {
                 const parsed = JSON.parse(stored);
-                // Merge carefully to preserve new defaults if schema changed
+                // Merge strategies
                 this.state = {
-                    ...this.state,
+                    ...defaultState,
                     ...parsed,
-                    stats: {
-                        ...this.state.stats,
-                        ...(parsed.stats || {})
-                    }
+                    stats: { ...defaultState.stats, ...(parsed.stats || {}) }
                 };
-
-                // Ensure distribution exists if loading old state
-                if (!this.state.stats.distribution) {
-                    this.state.stats.distribution = [0, 0, 0, 0, 0];
-                }
             }
         } catch (e) {
             console.error('Failed to load state', e);
@@ -57,29 +56,37 @@ class Store {
         }
     }
 
-    resetForNewGame(levelId, priceCents) {
+    startNewRun(levels) {
+        // Reset run-specific state but keep stats
+        this.state.status = 'PLAYING';
+        this.state.currentRound = 1;
+        this.state.score = 0;
+        this.state.roundsData = levels.map(l => l.id);
+
+        // Setup first level
+        this.setupLevel(levels[0]);
+    }
+
+    setupLevel(level) {
         this.state.status = 'PLAYING';
         this.state.grid = ["", "", "", "", ""];
         this.state.currentRow = 0;
         this.state.currentGuess = "";
-        this.state.secretLevelId = levelId;
-        this.state.secretPrice = priceCents;
-        // Don't reset keys or stats
+        this.state.secretLevelId = level.id;
+        this.state.secretPrice = level.priceCents;
         this.save();
     }
 
     updateGuess(key) {
         if (key === 'DEL') {
             this.state.currentGuess = this.state.currentGuess.slice(0, -1);
-        } else if (this.state.currentGuess.length < 6) { // Max 6 chars
+        } else if (this.state.currentGuess.length < 6) {
             this.state.currentGuess += key;
         }
-        // Debounce save if performance issue, but for simple app instant save is safer
         this.save();
     }
 
     submitCurrentRow() {
-        // Save current guess into grid
         this.state.grid[this.state.currentRow] = this.state.currentGuess;
         this.save();
     }
@@ -90,29 +97,43 @@ class Store {
         this.save();
     }
 
-    win() {
-        this.state.status = 'WON';
-        this.state.stats.played++;
-        this.state.stats.wins++;
-        this.state.stats.streak++;
-        this.state.stats.maxStreak = Math.max(this.state.stats.streak, this.state.stats.maxStreak);
+    roundWin() {
+        this.state.status = 'ROUND_WON';
 
-        // Update distribution (currentRow is 0-indexed, so corresponds to attempt 1..5)
-        if (this.state.stats.distribution[this.state.currentRow] !== undefined) {
-            this.state.stats.distribution[this.state.currentRow]++;
+        // Calculate Score based on attempts (0-indexed row)
+        // 1st try: 1000, 2nd: 800, 3rd: 600, 4th: 400, 5th: 200
+        const points = 1000 - (this.state.currentRow * 200);
+        this.state.score += points;
+
+        this.save();
+        return points;
+    }
+
+    roundLoss() {
+        this.state.status = 'ROUND_LOST';
+        this.save();
+    }
+
+    nextRound(nextLevel) {
+        this.state.currentRound++;
+        this.setupLevel(nextLevel);
+    }
+
+    gameComplete() {
+        this.state.status = 'GAME_WON'; // Completed all 5
+        this.state.stats.playedRuns++;
+        if (this.state.score > this.state.stats.highScore) {
+            this.state.stats.highScore = this.state.score;
         }
-
         this.save();
     }
 
-    lose() {
-        this.state.status = 'LOST';
-        this.state.stats.played++;
-        this.state.stats.streak = 0;
+    gameOver() {
+        this.state.status = 'GAME_OVER';
+        this.state.stats.playedRuns++;
         this.save();
     }
 
-    // Getters
     get currentPrice() {
         return parseInt(this.state.currentGuess || "0");
     }

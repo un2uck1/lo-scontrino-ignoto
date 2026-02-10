@@ -110,6 +110,10 @@ export const UI = {
         const tile = rowEl.querySelector('.tile');
         if (!tile) return;
 
+        // Remove animation class if already there to restart it
+        tile.classList.remove('animate-flip');
+        void tile.offsetWidth; // Trigger reflow
+
         tile.classList.add('animate-flip');
 
         setTimeout(() => {
@@ -120,88 +124,80 @@ export const UI = {
         }, 300);
     },
 
-    showStats(state, isWin) {
+    // ARCADE MODE: Result after each round
+    showRoundResult(state, isWin, points) {
         const m = this.elements.modals.result;
         if (!m) return;
+        m.classList.remove('hidden');
 
+        const modalContent = m.querySelector('.modal-content');
+        if (modalContent) {
+            modalContent.innerHTML = `
+                <div style="text-align:center;">
+                    <h2 style="color:${isWin ? '#4caf50' : '#ef4444'}; margin-bottom: 5px;">
+                        ${isWin ? 'SCONTRINO PAGATO!' : 'SCONTRINO RESPINTO'}
+                    </h2>
+                    
+                    <div style="font-size: 3rem; font-weight: 800; margin: 20px 0;">
+                        ${isWin ? `+${points}` : '0'} <span style="font-size: 1rem; opacity: 0.5;">PTS</span>
+                    </div>
+
+                    <div style="margin-bottom: 30px; opacity: 0.8;">
+                        Totale Reale: <strong>€${Game.formatPrice(state.secretPrice)}</strong>
+                    </div>
+
+                    <div style="margin-bottom: 20px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">
+                        Round ${state.currentRound} / ${state.totalRounds}
+                    </div>
+
+                    <button onclick="window.nextRound()" class="play-btn">
+                        ${state.currentRound < state.totalRounds ? 'PROSSIMO SCONTRINO &rarr;' : 'Vedi Risultato Finale'}
+                    </button>
+                </div>
+            `;
+        }
+    },
+
+    // ARCADE MODE: Game Over / Completed
+    showFinalStats(state) {
+        const m = this.elements.modals.result;
+        if (!m) return;
         m.classList.remove('hidden');
 
         const modalContent = m.querySelector('.modal-content');
         if (modalContent) {
             modalContent.innerHTML = `
                 <button class="close-btn" onclick="window.UI.toggleModal('result-modal', false)">&times;</button>
-                <div style="margin-top: 10px;">
-                    <h2 class="${isWin ? 'text-green-600' : ''}" style="color:${isWin ? '#6aaa64' : '#d32f2f'}">
-                        ${isWin ? 'PAGATO! 💶' : 'NON PAGATO 💀'}
-                    </h2>
+                <div style="text-align:center;">
+                    <h2 style="margin-bottom: 10px;">PARTITA FINITA</h2>
                     
-                    ${!isWin ? `<div class="mb-2" style="font-size: 1.1rem;">Il totale era: <strong>€${Game.formatPrice(state.secretPrice)}</strong></div>` : ''}
+                    <div style="font-size: 4rem; font-weight: 900; line-height: 1; margin: 20px 0; color: #1f2937;">
+                        ${state.score}
+                    </div>
+                    <div style="text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; opacity: 0.6; margin-bottom: 30px;">
+                        Punteggio Totale
+                    </div>
 
                     <div class="stats-grid">
                         <div class="stat-box">
-                            <div class="stat-value">${state.stats.played}</div>
-                            <div class="stat-label">Giocate</div>
+                            <div class="stat-value">${state.stats.playedRuns}</div>
+                            <div class="stat-label">Partite</div>
                         </div>
                         <div class="stat-box">
-                            <div class="stat-value">${state.stats.played > 0 ? Math.round((state.stats.wins / state.stats.played) * 100) : 0}%</div>
-                            <div class="stat-label">Vittorie</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-value">${state.stats.streak}</div>
-                            <div class="stat-label">Streak</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-value">${state.stats.maxStreak}</div>
-                            <div class="stat-label">Max</div>
+                            <div class="stat-value">${state.stats.highScore}</div>
+                            <div class="stat-label">Record</div>
                         </div>
                     </div>
 
-                    <div id="guess-distribution" class="guess-distribution"></div>
-
-                    <h3 style="font-size: 0.7rem; text-transform:uppercase; margin-bottom:5px; margin-top: 20px;">Prossimo Scontrino</h3>
-                    <div id="next-timer" style="font-family:monospace; font-size:1.5rem; margin-bottom:15px;">--:--:--</div>
-
-                    <button onclick="shareResult()" class="play-btn" style="background: ${isWin ? '#6aaa64' : '#1a1a1b'}">
+                    <button onclick="shareResult()" class="play-btn" style="background: #1f2937; margin-bottom: 10px;">
                         CONDIVIDI RISULTATO
                     </button>
-                    <!-- Debug button to reset easily during testing -->
-                     <button onclick="resetGame()" class="play-btn" style="background: transparent; color: #888; font-size: 0.6rem; margin-top:5px; padding: 5px; opacity: 0.5; box-shadow:none;">
-                        RESET (DEBUG)
+                    <button onclick="resetGame()" class="play-btn" style="background: transparent; color: #1f2937; border: 1px solid #1f2937;">
+                        NUOVA PARTITA
                     </button>
                 </div>
             `;
-
-            this.renderGuessDistribution(state);
         }
-    },
-
-    renderGuessDistribution(state) {
-        const container = document.getElementById('guess-distribution');
-        if (!container) return;
-
-        const distribution = state.stats.distribution || [0, 0, 0, 0, 0];
-        const maxCount = Math.max(...distribution, 1);
-        const currentAttemptIndex = state.status === 'WON' ? state.currentRow : -1;
-
-        container.innerHTML = distribution.map((count, index) => {
-            const attempt = index + 1;
-            const percentage = (count / maxCount) * 100;
-            const isCurrent = index === currentAttemptIndex;
-            const barColor = isCurrent ? '#6aaa64' : 'rgba(0,0,0,0.1)';
-            // Note: Dark mode logic handled by CSS classes properly but here we inline styles safely or use classes?
-            // Let's use styles that work. Dark mode overrides might need 'body.dark-mode' in CSS targeting this.
-
-            return `
-                <div class="distribution-row">
-                    <div class="distribution-label">${attempt}</div>
-                    <div class="distribution-bar" style="background:${isCurrent ? '#6aaa64' : ''}">
-                         <div style="width:${Math.max(percentage, count > 0 ? 8 : 0)}%; background:${isCurrent ? '#4caf50' : '#888'}; height:100%; display:flex; align-items:center; justify-content:flex-end; padding-right:5px; color:white; font-weight:bold; font-size:0.75rem;">
-                            ${count > 0 ? count : ''}
-                        </div>
-                    </div>
-                </div>
-            `;
-        }).join('');
     },
 
     toggleModal(id, show) {
@@ -209,6 +205,14 @@ export const UI = {
         if (!el) return;
         if (show) el.classList.remove('hidden');
         else el.classList.add('hidden');
+    },
+
+    // Helper to update Score in header directly
+    updateHeader(round, total, score) {
+        const h1 = document.querySelector('header h1');
+        if (h1) {
+            h1.innerHTML = `<span style="opacity:0.6">ROUND</span> ${round}/${total} &nbsp;&middot;&nbsp; <span style="opacity:0.6">SCORE</span> ${score}`;
+        }
     },
 
     shakeRow(rowIdx) {
@@ -235,7 +239,6 @@ export const UI = {
         const receipt = document.getElementById('receipt-preview');
         if (!receipt) return;
 
-        // Remove existing
         const old = receipt.querySelector('.receipt-stamp');
         if (old) old.remove();
 

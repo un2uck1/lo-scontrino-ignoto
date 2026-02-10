@@ -1,4 +1,3 @@
-// Main Application Entry Point
 import { store } from './store.js';
 import { UI } from './ui.js';
 import { Game } from './game.js';
@@ -17,20 +16,19 @@ window.openInfoModal = () => {
     UI.toggleModal('info-modal', true);
 }
 window.openStatsModal = () => { };
-window.resetGame = () => { };
-window.shareResult = () => { };
-window.toggleDarkMode = () => {
-    Utils.initAudio();
+// Resets entire RUN
+window.resetGame = () => {
     Utils.playSound('click');
-    settings.toggleDarkMode();
-    if (settings.get('darkMode')) {
-        document.body.classList.add('dark-mode');
-        Utils.showToast('🌙 Dark Mode');
-    } else {
-        document.body.classList.remove('dark-mode');
-        Utils.showToast('☀️ Light Mode');
-    }
-};
+    APP.startNewRun();
+}
+window.shareResult = () => {
+    Utils.playSound('click');
+    APP.shareResult();
+}
+window.nextRound = () => {
+    Utils.playSound('click');
+    APP.nextRound();
+}
 
 const APP = {
 
@@ -43,131 +41,122 @@ const APP = {
         }
 
         this.setupEventListeners();
-        this.initDailyChallenge();
-        this.updateCountdownTimer();
-        this.setupKeyboardNavigation();
+
+        // Check for existing run or start new
+        this.resumeOrStart();
+
+        this.updateHeader();
 
         // Audio init on first interaction
         document.body.addEventListener('click', () => Utils.initAudio(), { once: true });
 
-        console.log("Lo Scontrino Ignoto initialized ✨");
+        console.log("Lo Scontrino Ignoto ARCADE initialized ✨");
     },
 
-    initDailyChallenge() {
-        const today = Utils.getTodayString();
+    resumeOrStart() {
+        // If state is valid and playing, do nothing, just render
+        if (store.state.status === 'PLAYING') {
+            const level = gameData.find(l => l.id === store.state.secretLevelId);
 
-        if (store.state.lastPlayed === today) {
-            const currentLevel = gameData.find(l => l.id === store.state.secretLevelId);
-
-            if (currentLevel) {
-                UI.renderReceipt(currentLevel.items);
+            if (level) {
+                UI.renderReceipt(level.items);
                 UI.renderGrid(store.state);
-
                 this.updateKeypadState();
-
-                if (store.state.status !== 'PLAYING') {
-                    setTimeout(() => {
-                        UI.showStamp(store.state.status === 'WON' ? 'win' : 'loss');
-                        UI.showStats(store.state, store.state.status === 'WON');
-                    }, 500);
-                }
             } else {
-                this.startNewGame();
+                this.startNewRun();
             }
-            return;
+        } else {
+            this.startNewRun();
         }
-
-        this.startNewGame();
     },
 
-    startNewGame() {
-        const today = Utils.getTodayString();
-        const dayIndex = new Date(today).getTime();
-        const levelIndex = Math.floor(dayIndex / (1000 * 60 * 60 * 24)) % gameData.length;
-        const level = gameData[levelIndex];
+    startNewRun() {
+        // Difficulty Logic: Shuffle and Pick 5
+        const shuffled = [...gameData].sort(() => 0.5 - Math.random());
+        const selected = shuffled.slice(0, 5);
 
-        console.log(`Starting Level ${level.id} for ${today}`);
+        console.log(`Starting Run with Levels: ${selected.map(l => l.id)}`);
 
-        store.resetForNewGame(level.id, level.priceCents);
-        store.state.lastPlayed = today;
-        store.save();
+        store.startNewRun(selected);
+        this.startLevel(selected[0]);
+    },
+
+    startLevel(level) {
+        store.setupLevel(level);
 
         UI.renderReceipt(level.items);
         UI.renderGrid(store.state);
         UI.toggleModal('result-modal', false);
         UI.toggleModal('info-modal', false);
         this.updateKeypadState();
+        this.updateHeader();
 
         // Remove old stamp
         const oldStamp = document.querySelector('.receipt-stamp');
         if (oldStamp) oldStamp.remove();
     },
 
-    updateCountdownTimer() {
-        const updateTimer = () => {
-            const countdown = Utils.getNextGameCountdown();
-            const timerEl = document.getElementById('next-timer');
-            if (timerEl) {
-                if (store.state.status !== 'PLAYING') {
-                    timerEl.textContent = countdown.text;
-                } else {
-                    timerEl.textContent = 'IN CORSO...';
-                }
-            }
-        };
+    nextRound() {
+        if (store.state.currentRound < store.state.totalRounds) {
+            // Move to next
+            const nextIndex = store.state.currentRound; // Current passed rounds = index for next from 0-based array?
+            // Store.currentRound is 1-based (starts at 1).
+            // So if currentRound is 1, we just finished round 1. Next is round 2.
+            // But array index for round 2 is 1.
 
-        updateTimer();
-        setInterval(updateTimer, 1000);
+            const nextLvlId = store.state.roundsData[store.state.currentRound];
+            const nextLevel = gameData.find(l => l.id === nextLvlId);
+
+            if (nextLevel) {
+                store.state.currentRound++; // Increment validly
+                this.startLevel(nextLevel);
+            } else {
+                this.finishGame();
+            }
+        } else {
+            this.finishGame();
+        }
+    },
+
+    finishGame() {
+        store.gameComplete();
+        UI.showFinalStats(store.state);
+    },
+
+    updateHeader() {
+        // We need to implement this in UI
+        const headerTitle = document.querySelector('header h1');
+        if (headerTitle) {
+            headerTitle.innerHTML = `ROUND ${store.state.currentRound}/${store.state.totalRounds} <span style="opacity:0.4; margin:0 8px;">|</span> SCORE: ${store.state.score}`;
+        }
     },
 
     updateKeypadState() {
-        // Function intentionally left empty or simplified
-        // We no longer track 'used' keys visually as per user request
-    },
-
-    setupKeyboardNavigation() {
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                UI.toggleModal('info-modal', false);
-                UI.toggleModal('result-modal', false);
-            }
-        });
+        // No-op
     },
 
     setupEventListeners() {
         // Keypad
-        UI.elements.keypad.addEventListener('click', (e) => {
-            const btn = e.target.closest('.key');
-            if (!btn) return;
+        const keypad = document.getElementById('keypad');
+        if (keypad) {
+            keypad.addEventListener('click', (e) => {
+                const btn = e.target.closest('.key');
+                if (!btn) return;
 
-            // Add visual feedback
-            btn.style.transform = "scale(0.95)";
-            setTimeout(() => btn.style.transform = "", 100);
+                btn.style.transform = "scale(0.95)";
+                setTimeout(() => btn.style.transform = "", 100);
 
-            this.handleInput(btn.dataset.key);
-        });
+                this.handleInput(btn.dataset.key);
+            });
+        }
 
-        // Physical Keyboard
+        // Keyboard
         document.addEventListener('keydown', (e) => {
             if (store.state.status !== 'PLAYING') return;
-
             if (e.key === 'Enter') this.handleInput('ENTER');
             else if (e.key === 'Backspace' || e.key === 'Delete') this.handleInput('DEL');
             else if (/^[0-9]$/.test(e.key)) this.handleInput(e.key);
         });
-
-        window.openStatsModal = () => {
-            Utils.playSound('click');
-            UI.showStats(store.state, store.state.status === 'WON');
-        }
-        window.resetGame = () => {
-            Utils.playSound('click');
-            this.startNewGame();
-        }
-        window.shareResult = () => {
-            Utils.playSound('click');
-            this.shareResult();
-        }
     },
 
     handleInput(key) {
@@ -179,11 +168,6 @@ const APP = {
             this.submitGuess();
         } else {
             Utils.playSound('click');
-
-            if (settings.get('hapticEnabled')) {
-                Utils.vibrate(10);
-            }
-
             store.updateGuess(key);
             UI.updateRow(store.state.currentRow, store.currentPrice, null, false);
         }
@@ -196,13 +180,10 @@ const APP = {
             Utils.showToast('⚠️ Inserisci un prezzo!');
             UI.shakeRow(store.state.currentRow);
             Utils.playSound('error');
-            if (settings.get('hapticEnabled')) Utils.vibrate(100);
             return;
         }
 
         Utils.playSound('click');
-        if (settings.get('hapticEnabled')) Utils.vibrate(30);
-
         store.submitCurrentRow();
 
         const rowId = store.state.currentRow;
@@ -216,47 +197,34 @@ const APP = {
 
         setTimeout(() => {
             if (check.direction === 'EQUAL') {
-                // WIN
-                store.win();
+                // ROUND WIN
+                const points = store.roundWin();
                 Utils.launchConfetti();
                 Utils.playSound('win');
-                UI.showStamp('win'); // <--- STAMP
-                if (settings.get('hapticEnabled')) Utils.vibrate([100, 50, 100, 50, 200]);
+                UI.showStamp('win');
 
                 UI.pulseRow(rowId);
-                setTimeout(() => UI.showStats(store.state, true), 2000);
+                this.updateHeader();
+
+                setTimeout(() => UI.showRoundResult(store.state, true, points), 1500);
             } else {
-                // WRONG
+                // WRONG OR GAME OVER ROUND
                 if (store.state.currentRow >= 4) {
-                    // GAME OVER
-                    store.lose();
+                    store.roundLoss();
                     Utils.playSound('lose');
-                    UI.showStamp('loss'); // <--- STAMP
-                    if (settings.get('hapticEnabled')) Utils.vibrate([200, 100, 200]);
-                    setTimeout(() => UI.showStats(store.state, false), 2000);
+                    UI.showStamp('loss');
+                    setTimeout(() => UI.showRoundResult(store.state, false, 0), 1500);
                 } else {
                     store.advanceRow();
-                    // Keypad removed
                 }
             }
-        }, 600); // Sync with flip
+        }, 600);
     },
 
     shareResult() {
-        const attempts = store.state.currentRow + (store.state.status === 'WON' ? 1 : 0);
-        const won = store.state.status === 'WON';
-        const shareText = Utils.generateShareText(attempts, won, store.state.grid, store.state.secretPrice);
-
-        Utils.copyToClipboard(shareText).then(success => {
-            if (success) {
-                Utils.showToast('📋 Copiato negli appunti!');
-                if (settings.get('hapticEnabled')) Utils.vibrate(50);
-            } else {
-                Utils.showToast('❌ Errore nella copia');
-            }
-        });
+        const shareText = `🧾 Lo Scontrino Ignoto \nScore: ${store.state.score}\nRound ${store.state.currentRound}/5`;
+        Utils.copyToClipboard(shareText).then(() => Utils.showToast('Copiato!'));
     }
 };
 
-// Start App
 APP.init();
