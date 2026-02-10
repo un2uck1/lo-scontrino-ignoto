@@ -6,7 +6,6 @@ export const UI = {
     elements: {
         grid: document.getElementById('grid-board'),
         receiptList: document.getElementById('product-list'),
-        keypad: document.getElementById('keypad'),
         modals: {
             info: document.getElementById('info-modal'),
             result: document.getElementById('result-modal')
@@ -65,6 +64,20 @@ export const UI = {
     },
 
     renderGrid(state) {
+        // Clear all rows first to ensure clean state for new rounds
+        for (let i = 0; i < 5; i++) {
+            const row = document.getElementById(`row-${i}`);
+            if (row) {
+                const tile = row.querySelector('.tile');
+                if (tile) {
+                    tile.className = 'tile';
+                    tile.textContent = '';
+                    delete tile.dataset.state;
+                }
+            }
+        }
+
+        // Render current state
         state.grid.forEach((guessStr, idx) => {
             if (idx < state.currentRow) {
                 const val = parseInt(guessStr || "0");
@@ -110,9 +123,8 @@ export const UI = {
         const tile = rowEl.querySelector('.tile');
         if (!tile) return;
 
-        // Remove animation class if already there to restart it
         tile.classList.remove('animate-flip');
-        void tile.offsetWidth; // Trigger reflow
+        void tile.offsetWidth;
 
         tile.classList.add('animate-flip');
 
@@ -124,7 +136,6 @@ export const UI = {
         }, 300);
     },
 
-    // ARCADE MODE: Result after each round
     showRoundResult(state, isWin, points) {
         const m = this.elements.modals.result;
         if (!m) return;
@@ -153,12 +164,13 @@ export const UI = {
                     <button onclick="window.nextRound()" class="play-btn">
                         ${state.currentRound < state.totalRounds ? 'PROSSIMO SCONTRINO &rarr;' : 'Vedi Risultato Finale'}
                     </button>
+                    <!-- Small debug/skip -->
+                    <button onclick="window.nextRound()" style="margin-top:20px; opacity:0.3; font-size:10px; border:none; background:transparent">Skip</button>
                 </div>
             `;
         }
     },
 
-    // ARCADE MODE: Game Over / Completed
     showFinalStats(state) {
         const m = this.elements.modals.result;
         if (!m) return;
@@ -207,7 +219,6 @@ export const UI = {
         else el.classList.add('hidden');
     },
 
-    // Helper to update Score in header directly
     updateHeader(round, total, score) {
         const h1 = document.querySelector('header h1');
         if (h1) {
