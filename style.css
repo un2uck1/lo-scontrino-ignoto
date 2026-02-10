@@ -3,35 +3,32 @@
     --color-correct: #6aaa64;
     --color-present: #c9b458;
     --color-absent: #787c7e;
-    --color-standard: #ffffff;
-    --color-text: #1a1a1b;
-    --key-bg: #e3e6ea;
-    --key-active: #c8cdd3;
-    --key-used: #cfd2d6;
-    --border-color: #d3d6da;
-    --bg-color: #e0e5ec;
-    /* Neumorphic Base */
-    --modal-overlay: rgba(0, 0, 0, 0.4);
+    --color-text: #202124;
+    --bg-color: #ffffff;
+
+    /* Keypad Colors - Minimal */
+    --key-bg: #f3f4f6;
+    --key-text: #1f2937;
+    --key-active: #e5e7eb;
 
     /* Receipt Specifics */
-    --receipt-bg: #fffcf5;
+    --receipt-bg: #fff;
     --receipt-text: #2a2a2a;
-    --receipt-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.02);
+    --receipt-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 /* Dark Mode Variables */
 body.dark-mode {
-    --color-text: #e8eaed;
-    --key-bg: #4a4a4c;
-    --key-active: #6e6e70;
-    --key-used: #2c2c2e;
-    --border-color: #3a3a3c;
+    --color-text: #ffffff;
     --bg-color: #121213;
-    --color-standard: #121213;
-    --modal-overlay: rgba(0, 0, 0, 0.7);
+
+    --key-bg: #2d2d2f;
+    --key-text: #fff;
+    --key-active: #3f3f41;
+
     --receipt-bg: #2a2a2a;
     --receipt-text: #e0e0e0;
-    --receipt-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+    --receipt-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 * {
@@ -40,7 +37,7 @@ body.dark-mode {
 }
 
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background-color: var(--bg-color);
     color: var(--color-text);
     display: flex;
@@ -50,45 +47,39 @@ body {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    transition: background-color 0.4s ease, color 0.4s ease;
-    /* Subtle noise texture */
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Header */
+/* Header - Minimal */
 header {
     display: flex;
     align-items: center;
     justify-content: center;
     height: 60px;
-    position: relative;
     flex-shrink: 0;
     z-index: 10;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 body.dark-mode header {
-    background: rgba(0, 0, 0, 0.2);
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 header h1 {
-    font-family: 'Courier Prime', monospace;
+    font-family: 'Inter', sans-serif;
     font-weight: 700;
-    font-size: 1.5rem;
+    font-size: 1.1rem;
     letter-spacing: -0.5px;
     margin: 0;
     text-transform: uppercase;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 header button {
+    position: absolute;
     transition: all 0.2s ease;
-    border-radius: 50%;
-    width: 44px;
-    height: 44px;
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -96,13 +87,16 @@ header button {
     border: none;
     cursor: pointer;
     color: var(--color-text);
-    opacity: 0.8;
+    opacity: 0.6;
 }
 
 header button:hover {
-    background-color: rgba(128, 128, 128, 0.1);
-    transform: scale(1.1);
+    background-color: rgba(0, 0, 0, 0.05);
     opacity: 1;
+}
+
+body.dark-mode header button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Game Container */
@@ -112,212 +106,136 @@ header button:hover {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding: 20px 15px;
+    padding: 20px;
     overflow-y: auto;
-    gap: 25px;
-    scrollbar-width: none;
-    /* Hide scrollbar for cleaner look */
+    gap: 30px;
 }
 
-#game-container::-webkit-scrollbar {
-    display: none;
-}
-
-/* ==== REALISTIC RECEIPT ==== */
+/* ==== MINIMAL RECEIPT ==== */
 #receipt-preview {
-    width: 340px;
+    width: 320px;
     max-width: 100%;
     background: var(--receipt-bg);
     color: var(--receipt-text);
     font-family: 'Courier Prime', monospace;
-    font-size: 0.75rem;
+    /* Keep Courier for data authenticity */
+    font-size: 0.8rem;
     box-shadow: var(--receipt-shadow);
     position: relative;
-    padding: 20px 24px 40px 24px;
-    transform-origin: top center;
-    animation: receiptPrint 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-
-    /* Paper Texture */
-    background-image:
-        linear-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
-    background-size: 100% 3px, 3px 100%;
+    padding: 30px 25px 40px 25px;
+    animation: receiptPrint 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    border-radius: 2px;
 }
 
-/* Improved Zig Zag Edge using Mask */
-#receipt-preview {
-    -webkit-mask-image:
-        linear-gradient(to bottom, transparent 0%, black 10px, black calc(100% - 10px), transparent 100%),
-        radial-gradient(circle at 10px 10px, black 70%, transparent 71%),
-        radial-gradient(circle at 10px -10px, black 70%, transparent 71%);
-    /* Fallback to CSS Shapes for zig zag if mask is complex to implement perfectly cross-browser in one go, 
-       but let's stick to the reliable pseudo-element method for jagged edges which is universally supported */
-    -webkit-mask-image: none;
-    /* Resetting to use pseudo elements */
-}
-
-/* Realistic Jagged Edge */
-#receipt-preview::before,
+/* Jagged Edge - Simplified */
 #receipt-preview::after {
     content: "";
     position: absolute;
+    bottom: -6px;
     left: 0;
     width: 100%;
-    height: 12px;
-    background-color: var(--bg-color);
-    /* Matches body bg to look transparent */
-    background-image: linear-gradient(135deg, var(--receipt-bg) 50%, transparent 50%), linear-gradient(45deg, var(--receipt-bg) 50%, transparent 50%);
-    background-position: top left;
-    background-repeat: repeat-x;
-    background-size: 16px 16px;
-    z-index: 2;
-}
-
-#receipt-preview::before {
-    top: -8px;
+    height: 6px;
+    background: radial-gradient(circle, transparent 70%, var(--receipt-bg) 70%);
+    background-size: 12px 12px;
+    background-position: bottom;
     transform: rotate(180deg);
 }
 
-#receipt-preview::after {
-    bottom: -8px;
+#receipt-preview::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background: radial-gradient(circle, transparent 70%, var(--receipt-bg) 70%);
+    background-size: 12px 12px;
+    background-position: bottom;
 }
 
 .receipt-header {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
 .store-name {
-    font-size: 1.3rem;
+    font-size: 1.1rem;
     font-weight: 700;
-    letter-spacing: 1.5px;
-    margin-bottom: 5px;
     text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
 }
 
 .store-subtitle {
-    font-size: 0.65rem;
-    opacity: 0.6;
-    margin-bottom: 10px;
+    font-size: 0.6rem;
+    opacity: 0.5;
+    text-transform: uppercase;
 }
 
 .receipt-divider {
     width: 100%;
-    border-bottom: 1px dashed rgba(0, 0, 0, 0.3);
-    margin: 12px 0;
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.15);
+    margin: 15px 0;
     height: 0;
-    opacity: 0.5;
 }
 
 body.dark-mode .receipt-divider {
-    border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
-}
-
-.receipt-meta {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.7rem;
-    opacity: 0.8;
-    margin-bottom: 15px;
-}
-
-.items-header {
-    display: flex;
-    justify-content: space-between;
-    font-weight: bold;
-    font-size: 0.75rem;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-}
-
-.product-items {
-    min-height: 60px;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.15);
 }
 
 .product-items .flex {
     display: flex;
     justify-content: space-between;
-    margin: 8px 0;
-    font-size: 0.8rem;
-    line-height: 1.4;
-}
-
-.product-items .flex span:first-child {
-    max-width: 200px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    margin: 10px 0;
+    font-size: 0.85rem;
 }
 
 .receipt-footer {
     text-align: center;
-    margin-top: 25px;
+    margin-top: 30px;
 }
 
 .total-label {
-    font-weight: 800;
-    font-size: 1rem;
-    letter-spacing: 2px;
-    margin-bottom: 12px;
-    border-top: 2px dashed var(--receipt-text);
-    border-bottom: 2px dashed var(--receipt-text);
-    padding: 12px 0;
-    display: inline-block;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    padding: 10px 0;
+    border-top: 1px solid var(--receipt-text);
+    border-bottom: 1px solid var(--receipt-text);
+    display: block;
     width: 100%;
 }
 
-.receipt-thanks {
-    font-size: 0.75rem;
-    margin-top: 15px;
-    font-style: italic;
-    opacity: 0.8;
-}
-
-/* Barcode */
 .barcode {
-    height: 45px;
-    width: 90%;
-    margin: 20px auto 5px auto;
+    height: 30px;
+    width: 100%;
+    margin: 25px auto 10px auto;
     background: repeating-linear-gradient(90deg,
             var(--receipt-text) 0px,
-            var(--receipt-text) 2px,
-            transparent 2px,
-            transparent 5px,
-            var(--receipt-text) 5px,
-            var(--receipt-text) 7px,
-            transparent 7px,
-            transparent 11px,
-            var(--receipt-text) 11px,
-            var(--receipt-text) 12px,
-            transparent 12px,
-            transparent 16px);
-    opacity: 0.8;
+            var(--receipt-text) 1px,
+            transparent 1px,
+            transparent 3px);
+    opacity: 0.4;
 }
 
-/* Stamp Effect */
+/* Stamp Effect - Minimal */
 .receipt-stamp {
     position: absolute;
-    top: 40%;
+    top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%) rotate(-15deg) scale(0);
-    border: 4px solid;
-    padding: 10px 20px;
-    font-size: 2rem;
-    font-weight: 900;
+    transform: translate(-50%, -50%) rotate(-10deg);
+    border: 3px solid;
+    padding: 8px 16px;
+    font-size: 1.5rem;
+    font-weight: 700;
     text-transform: uppercase;
-    font-family: 'Courier Prime', monospace;
-    /* Stencil look preferred but Courier works */
-    letter-spacing: 5px;
+    letter-spacing: 2px;
     opacity: 0;
-    z-index: 10;
-    border-radius: 8px;
-    mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' opacity='0.8'/%3E%3C/svg%3E");
-    /* Simple CSS grunge effect using mix-blend-mode if possible */
+    animation: stampIn 0.3s ease-out forwards;
     mix-blend-mode: multiply;
-    animation: stampIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
 body.dark-mode .receipt-stamp {
@@ -326,295 +244,249 @@ body.dark-mode .receipt-stamp {
 
 .is-win {
     color: #d32f2f;
-    /* Red ink usually looks more like a stamp */
     border-color: #d32f2f;
 }
 
 .is-loss {
-    color: #1a1a1b;
-    border-color: #1a1a1b;
+    color: #000;
+    border-color: #000;
+}
+
+body.dark-mode .is-loss {
+    color: #fff;
+    border-color: #fff;
 }
 
 @keyframes stampIn {
     0% {
-        transform: translate(-50%, -50%) rotate(-15deg) scale(3);
+        transform: translate(-50%, -50%) scale(2);
         opacity: 0;
     }
 
     100% {
-        transform: translate(-50%, -50%) rotate(-15deg) scale(1);
-        opacity: 0.7;
+        transform: translate(-50%, -50%) rotate(-10deg) scale(1);
+        opacity: 0.8;
     }
 }
 
-/* Wordle Grid */
+/* Wordle Grid - Minimal */
 #grid-board {
     display: grid;
     grid-template-rows: repeat(5, 1fr);
-    gap: 8px;
-    width: 320px;
+    gap: 6px;
+    width: 280px;
     max-width: 100%;
 }
 
 .guess-row {
     display: flex;
-    height: 52px;
-    gap: 8px;
+    height: 48px;
+    gap: 6px;
 }
 
-/* Tiles - PREMIUM LOOK */
 .tile {
     width: 100%;
-    border: 0;
-    background-color: #ffffff;
-    color: #000;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    background-color: transparent;
+    color: var(--color-text);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
-    font-weight: 700;
-    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 6px;
     user-select: none;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    font-family: 'Inter', sans-serif;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    position: relative;
-    overflow: hidden;
+    transition: all 0.2s;
 }
 
 body.dark-mode .tile {
-    background-color: #2a2a2a;
-    color: #fff;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Active State (Typing) */
 .tile[data-state='active'] {
-    border: 2px solid #878a8c;
-    box-shadow: none;
-    background-color: rgba(255, 255, 255, 0.5);
+    border-color: #000;
+    font-weight: 700;
 }
 
-/* Completed States */
+body.dark-mode .tile[data-state='active'] {
+    border-color: #fff;
+}
+
 .tile[data-state='correct'] {
     background-color: var(--color-correct);
+    border-color: var(--color-correct);
     color: white;
-    box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.2);
 }
 
 .tile[data-state='present'] {
     background-color: var(--color-present);
-    color: white;
-    box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.2);
-}
-
-.tile[data-state='absent'] {
-    background-color: var(--color-absent);
+    border-color: var(--color-present);
     color: white;
 }
 
-/* Keypad - SOFT 3D */
+/* Keypad - MINIMAL APPLE STYLE */
 #keypad {
     width: 100%;
-    max-width: 500px;
+    max-width: 400px;
+    /* Smaller max width for compactness */
     margin: 0 auto;
-    padding: 15px;
+    padding: 10px 20px 30px 20px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    background-color: transparent;
-    flex-shrink: 0;
-    padding-bottom: 30px;
+    gap: 12px;
 }
 
 .key-row {
     display: flex;
     justify-content: center;
-    gap: 8px;
+    gap: 12px;
     width: 100%;
 }
 
 .key {
     font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 1.3rem;
-    border: 0;
+    font-weight: 500;
+    font-size: 1.4rem;
+    border: none;
     padding: 0;
     margin: 0;
     height: 56px;
-    border-radius: 12px;
+    border-radius: 50%;
+    /* Circular keys typical of minimal design or rounded rects */
     cursor: pointer;
-    user-select: none;
     background-color: var(--key-bg);
-    color: var(--color-text);
+    color: var(--key-text);
     flex: 1;
+    /* For rows with equal keys */
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 0 #b5b9bd;
-    /* 3D effect shadow */
-    position: relative;
-    top: 0;
+    transition: background-color 0.1s;
+    /* No shadow for minimal */
 }
 
-body.dark-mode .key {
-    box-shadow: 0 4px 0 #2a2a2c;
+/* Make keys more expansive if not forcing circular */
+.key {
+    border-radius: 12px;
+    /* Soft square */
 }
 
 .key:active {
-    transform: translateY(4px);
-    box-shadow: 0 0 0 transparent;
     background-color: var(--key-active);
+    transform: scale(0.96);
 }
 
 .key.big-key {
     flex: 1.5;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    font-weight: 800;
+    font-size: 1rem;
+    font-weight: 600;
+    background-color: #e5e7eb;
+    /* Slightly darker/different for functions */
 }
 
-.key.used {
-    background-color: var(--key-used);
-    opacity: 1;
-    color: rgba(0, 0, 0, 0.4);
-    box-shadow: 0 2px 0 #b5b9bd;
-    transform: translateY(2px);
+body.dark-mode .key.big-key {
+    background-color: #3f3f41;
 }
 
-body.dark-mode .key.used {
-    color: rgba(255, 255, 255, 0.3);
-    box-shadow: 0 2px 0 #2a2a2c;
+/* Enter Key specific */
+.key[data-key="ENTER"] {
+    color: var(--color-correct);
 }
 
-/* Modals - GLASSMORPHISM SUPREME */
+/* Delete Key specific */
+.key[data-key="DEL"] {
+    color: #d32f2f;
+}
+
+/* Modals - Clean minimal */
 .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 100;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    animation: fadeIn 0.3s ease-out;
+    backdrop-filter: blur(5px);
 }
 
 .modal-content {
-    background: rgba(255, 255, 255, 0.95);
-    color: #1a1a1b;
-    padding: 30px;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    background: var(--bg-color);
+    color: var(--color-text);
+    padding: 40px 30px;
     max-width: 90%;
-    width: 420px;
-    max-height: 85vh;
-    overflow-y: auto;
-    border-radius: 24px;
+    width: 400px;
+    border-radius: 16px;
     position: relative;
-    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    animation: slideUp 0.3s ease-out;
 }
 
 body.dark-mode .modal-content {
-    background: rgba(30, 30, 32, 0.95);
-    color: #fff;
     border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.modal-content h2 {
-    font-weight: 800;
-    margin-top: 0;
-    text-transform: uppercase;
-    font-size: 1.8rem;
-    letter-spacing: -1px;
 }
 
 .close-btn {
     position: absolute;
-    top: 20px;
-    right: 20px;
-    background: rgba(0, 0, 0, 0.05);
+    top: 15px;
+    right: 15px;
+    background: transparent;
     border: none;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     cursor: pointer;
-    color: inherit;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s;
+    color: var(--color-text);
+    opacity: 0.5;
 }
 
 .close-btn:hover {
-    background: rgba(0, 0, 0, 0.1);
+    opacity: 1;
 }
 
-body.dark-mode .close-btn {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-/* Stats Grid */
 .stats-grid {
     display: grid;
     grid-template-cols: repeat(4, 1fr);
-    gap: 15px;
-    margin: 25px 0;
+    gap: 10px;
+    margin: 30px 0;
     text-align: center;
 }
 
-.stat-box {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
 .stat-value {
-    font-size: 2rem;
-    font-weight: 800;
-    line-height: 1;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 5px;
 }
 
 .stat-label {
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-top: 8px;
+    font-size: 0.7rem;
     opacity: 0.6;
-    font-weight: 600;
+    text-transform: uppercase;
 }
 
-/* Distribution Bars */
 .guess-distribution {
-    margin: 25px 0;
-    width: 100%;
+    margin: 30px 0;
 }
 
 .distribution-row {
     display: flex;
     align-items: center;
-    margin: 6px 0;
-    font-size: 0.9rem;
+    margin: 5px 0;
+    font-size: 0.8rem;
 }
 
 .distribution-label {
-    width: 20px;
-    font-weight: bold;
-    opacity: 0.7;
+    width: 15px;
+    opacity: 0.5;
 }
 
 .distribution-bar {
     flex: 1;
+    height: 18px;
     background: rgba(0, 0, 0, 0.05);
     margin-left: 10px;
-    height: 24px;
-    border-radius: 6px;
+    border-radius: 4px;
     overflow: hidden;
 }
 
@@ -622,38 +494,28 @@ body.dark-mode .distribution-bar {
     background: rgba(255, 255, 255, 0.05);
 }
 
-/* Play Button */
 .play-btn {
     width: 100%;
     background-color: var(--color-text);
     color: var(--bg-color);
     border: none;
-    padding: 16px;
-    border-radius: 12px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    padding: 15px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
     cursor: pointer;
-    font-size: 1rem;
-    margin-top: 15px;
-    transition: transform 0.2s, opacity 0.2s;
-    box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.2);
+    margin-top: 10px;
 }
 
 .play-btn:hover {
-    transform: translateY(-2px);
-    opacity: 0.95;
+    opacity: 0.9;
 }
 
-.play-btn:active {
-    transform: translateY(0);
-}
-
-/* Animations */
+/* Animations - Subtle */
 @keyframes receiptPrint {
     0% {
         opacity: 0;
-        transform: translateY(-80px);
+        transform: translateY(-20px);
     }
 
     100% {
@@ -662,19 +524,9 @@ body.dark-mode .distribution-bar {
     }
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
 @keyframes slideUp {
     from {
-        transform: translateY(40px);
+        transform: translateY(20px);
         opacity: 0;
     }
 
@@ -689,17 +541,18 @@ body.dark-mode .distribution-bar {
         transform: rotateX(0);
     }
 
-    45% {
-        transform: rotateX(90deg);
-    }
-
-    55% {
-        transform: rotateX(90deg);
-    }
-
     100% {
         transform: rotateX(0);
     }
+}
+
+/* Disable flip for minimal? Or keep subtle. Keeping standard flip utility but maybe speed up */
+.animate-flip {
+    animation: flip 0.6s ease-in-out;
+}
+
+.animate-pulse {
+    animation: pop 0.3s ease-in-out;
 }
 
 @keyframes pop {
@@ -707,8 +560,8 @@ body.dark-mode .distribution-bar {
         transform: scale(1);
     }
 
-    40% {
-        transform: scale(1.15);
+    50% {
+        transform: scale(1.05);
     }
 
     100% {
@@ -723,33 +576,17 @@ body.dark-mode .distribution-bar {
         transform: translateX(0);
     }
 
-    20% {
-        transform: translateX(-6px);
-    }
-
-    40% {
-        transform: translateX(6px);
-    }
-
-    60% {
+    25% {
         transform: translateX(-4px);
     }
 
-    80% {
+    75% {
         transform: translateX(4px);
     }
 }
 
-.animate-flip {
-    animation: flip 0.6s ease-in-out backwards;
-}
-
 .animate-shake {
-    animation: shake 0.4s ease-in-out;
-}
-
-.animate-pulse {
-    animation: pop 0.4s ease-in-out;
+    animation: shake 0.3s ease-in-out;
 }
 
 /* Utilities */
@@ -757,43 +594,24 @@ body.dark-mode .distribution-bar {
     display: none !important;
 }
 
-.text-center {
-    text-align: center;
-}
-
-.w-full {
-    width: 100%;
-}
-
 /* Responsive */
 @media (max-height: 700px) {
     #game-container {
-        padding: 10px;
-        gap: 15px;
+        padding: 15px;
+        gap: 20px;
     }
 
     #receipt-preview {
-        padding: 15px 15px 25px 15px;
-        width: 300px;
+        padding: 20px;
+        width: 280px;
+    }
+
+    #keypad {
+        padding: 10px;
     }
 
     .key {
         height: 48px;
-    }
-
-    header {
-        height: 50px;
-    }
-
-    .store-name {
-        font-size: 1.1rem;
-    }
-
-    .tile {
-        font-size: 1.1rem;
-    }
-
-    .modal-content {
-        padding: 20px;
+        font-size: 1.2rem;
     }
 }

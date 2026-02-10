@@ -33,7 +33,6 @@ window.toggleDarkMode = () => {
 };
 
 const APP = {
-    usedKeys: new Set(),
 
     init() {
         UI.init();
@@ -64,14 +63,6 @@ const APP = {
                 UI.renderReceipt(currentLevel.items);
                 UI.renderGrid(store.state);
 
-                // Re-hydrate used keys
-                store.state.grid.forEach(row => {
-                    if (!row) return;
-                    for (let char of row) {
-                        this.usedKeys.add(char);
-                    }
-                });
-
                 this.updateKeypadState();
 
                 if (store.state.status !== 'PLAYING') {
@@ -100,8 +91,6 @@ const APP = {
         store.resetForNewGame(level.id, level.priceCents);
         store.state.lastPlayed = today;
         store.save();
-
-        this.usedKeys.clear();
 
         UI.renderReceipt(level.items);
         UI.renderGrid(store.state);
@@ -132,14 +121,8 @@ const APP = {
     },
 
     updateKeypadState() {
-        document.querySelectorAll('.key[data-key]').forEach(key => {
-            const keyValue = key.dataset.key;
-            if (this.usedKeys.has(keyValue)) {
-                key.classList.add('used');
-            } else {
-                key.classList.remove('used');
-            }
-        });
+        // Function intentionally left empty or simplified
+        // We no longer track 'used' keys visually as per user request
     },
 
     setupKeyboardNavigation() {
@@ -201,12 +184,6 @@ const APP = {
                 Utils.vibrate(10);
             }
 
-            if (/^[0-9]$/.test(key)) {
-                if (store.state.currentGuess.length < 6) {
-                    this.usedKeys.add(key);
-                }
-            }
-
             store.updateGuess(key);
             UI.updateRow(store.state.currentRow, store.currentPrice, null, false);
         }
@@ -259,7 +236,7 @@ const APP = {
                     setTimeout(() => UI.showStats(store.state, false), 2000);
                 } else {
                     store.advanceRow();
-                    this.updateKeypadState();
+                    // Keypad removed
                 }
             }
         }, 600); // Sync with flip
