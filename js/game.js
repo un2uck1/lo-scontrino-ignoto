@@ -8,8 +8,14 @@ export const Game = {
      * @returns {object} { diff: number, direction: 'UP' | 'DOWN' | 'EQUAL' }
      */
     checkGuess(guessCents, targetCents) {
+        // Updated: ±50 Cents OR 5% (whichever is less punishing)
         const diff = guessCents - targetCents;
-        if (diff === 0) return { diff, direction: 'EQUAL' };
+        const tolerance = Math.max(50, targetCents * 0.05);
+
+        if (Math.abs(diff) <= tolerance) {
+            return { diff: 0, direction: 'EQUAL' };
+        }
+
         return {
             diff,
             direction: diff > 0 ? 'DOWN' : 'UP'
