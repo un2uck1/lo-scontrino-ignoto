@@ -219,10 +219,50 @@ export const UI = {
         else el.classList.add('hidden');
     },
 
-    updateHeader(round, total, score) {
+    updateHeader(round, total, score, roundResults = []) {
+        // Update Title Text
         const h1 = document.querySelector('header h1');
         if (h1) {
-            h1.innerHTML = `<span style="opacity:0.6">ROUND</span> ${round}/${total} &nbsp;&middot;&nbsp; <span style="opacity:0.6">SCORE</span> ${score}`;
+            h1.innerHTML = `<span style="opacity:0.6">ROUND</span> ${round}/${total} &nbsp;&middot;&nbsp; <span style="opacity:0.6">SCORE</span> <span class="score-val">${score}</span>`;
+
+            // Simple Score Animation Detection
+            const scoreEl = h1.querySelector('.score-val');
+            // In a real app we'd track prevScore to toggle class only on change
+        }
+
+        // Update Progress Bar
+        const container = document.getElementById('game-container');
+        if (!container) return;
+
+        let progressBar = document.getElementById('round-progress-bar');
+        if (!progressBar) {
+            progressBar = document.createElement('div');
+            progressBar.id = 'round-progress-bar';
+            progressBar.className = 'progress-container';
+            // Insert after title or before receipt? Before receipt is best.
+            // Game Container has children. Receipt is usually first or after a wrapper.
+            // Let's prepend to game container for top visibility
+            container.insertBefore(progressBar, container.firstChild);
+        }
+
+        // Render Segments
+        progressBar.innerHTML = '';
+        for (let i = 1; i <= total; i++) {
+            const seg = document.createElement('div');
+            seg.className = 'progress-segment';
+
+            // Logic
+            if (i < round) {
+                // Past round
+                const result = roundResults[i - 1];
+                if (result === 'WIN') seg.classList.add('completed-win');
+                else if (result === 'LOSS') seg.classList.add('completed-loss');
+                else seg.classList.add('completed-win'); // Default/legacy
+            } else if (i === round) {
+                seg.classList.add('active');
+            }
+
+            progressBar.appendChild(seg);
         }
     },
 

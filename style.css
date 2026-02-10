@@ -90,7 +90,7 @@ body.dark-mode header button:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Game Container - Centered and clean */
+/* Game Container */
 #game-container {
     flex: 1;
     display: flex;
@@ -106,6 +106,67 @@ body.dark-mode header button:hover {
 #game-container::-webkit-scrollbar {
     display: none;
 }
+
+/* Progress Bar - Minimal */
+.progress-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 0px;
+    width: 250px;
+    height: 10px;
+}
+
+.progress-segment {
+    flex: 1;
+    height: 6px;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.dark-mode .progress-segment {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.progress-segment.completed-win {
+    background: var(--color-correct);
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.4);
+}
+
+.progress-segment.completed-loss {
+    background: var(--color-error);
+    opacity: 0.5;
+}
+
+.progress-segment.active {
+    background: var(--color-text);
+    transform: scaleY(1.5);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Score Animation Class */
+.score-animate {
+    animation: scorePop 0.4s ease-out;
+    display: inline-block;
+}
+
+@keyframes scorePop {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+        color: var(--color-correct);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
 
 /* ==== RECEIPT LOGIC ==== */
 #receipt-preview {

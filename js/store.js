@@ -9,7 +9,8 @@ const defaultState = {
     currentRound: 1, // 1 to 5
     totalRounds: 5,
     score: 0,
-    roundsData: [], // Array of level IDs for this run
+    roundsData: [], // Array of level IDs
+    roundResults: [], // ['WIN', 'LOSS', 'WIN', null, null]
 
     // Current Level State
     grid: ["", "", "", "", ""],
@@ -36,7 +37,6 @@ class Store {
             const stored = localStorage.getItem(STATE_KEY);
             if (stored) {
                 const parsed = JSON.parse(stored);
-                // Merge strategies
                 this.state = {
                     ...defaultState,
                     ...parsed,
@@ -57,13 +57,12 @@ class Store {
     }
 
     startNewRun(levels) {
-        // Reset run-specific state but keep stats
         this.state.status = 'PLAYING';
         this.state.currentRound = 1;
         this.state.score = 0;
+        this.state.roundResults = []; // Reset results history
         this.state.roundsData = levels.map(l => l.id);
 
-        // Setup first level
         this.setupLevel(levels[0]);
     }
 
@@ -100,10 +99,12 @@ class Store {
     roundWin() {
         this.state.status = 'ROUND_WON';
 
-        // Calculate Score based on attempts (0-indexed row)
-        // 1st try: 1000, 2nd: 800, 3rd: 600, 4th: 400, 5th: 200
+        // Calculate Score: 1000 base - 200 per attempt used (0-indexed)
         const points = 1000 - (this.state.currentRow * 200);
         this.state.score += points;
+
+        // Track result
+        this.state.roundResults[this.state.currentRound - 1] = 'WIN';
 
         this.save();
         return points;
@@ -111,6 +112,7 @@ class Store {
 
     roundLoss() {
         this.state.status = 'ROUND_LOST';
+        this.state.roundResults[this.state.currentRound - 1] = 'LOSS';
         this.save();
     }
 
@@ -120,7 +122,7 @@ class Store {
     }
 
     gameComplete() {
-        this.state.status = 'GAME_WON'; // Completed all 5
+        this.state.status = 'GAME_WON';
         this.state.stats.playedRuns++;
         if (this.state.score > this.state.stats.highScore) {
             this.state.stats.highScore = this.state.score;

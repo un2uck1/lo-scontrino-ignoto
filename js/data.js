@@ -232,5 +232,94 @@ export const gameData = [
             { name: "TALEGGIO", qty: 1, priceCents: 479 }
         ],
         priceCents: 1727
+    },
+    // Adding 10 new receipts for Variety
+    {
+        id: 26,
+        items: [
+            { name: "RASOI GILLETTE 4P", qty: 1, priceCents: 899 },
+            { name: "SCHIUMA BARBA", qty: 1, priceCents: 349 },
+            { name: "DOPOBARBA NIVEA", qty: 1, priceCents: 659 }
+        ],
+        priceCents: 1907
+    },
+    {
+        id: 27,
+        items: [
+            { name: "CROCCHETTE CRUNCH", qty: 1, priceCents: 1499 },
+            { name: "SCATOLETTE GATTO", qty: 10, priceCents: 89 },
+            { name: "SNACK CANE", qty: 2, priceCents: 199 }
+        ],
+        priceCents: 2787
+    },
+    {
+        id: 28,
+        items: [
+            { name: "LAMPADINA LED E27", qty: 3, priceCents: 450 },
+            { name: "PILE AA DURACELL", qty: 1, priceCents: 599 },
+            { name: "PROLUNGA 3M", qty: 1, priceCents: 790 }
+        ],
+        priceCents: 2739
+    },
+    {
+        id: 29,
+        items: [
+            { name: "LIBRO BESTSELLER", qty: 1, priceCents: 1850 },
+            { name: "RIVISTA SETTIM.", qty: 1, priceCents: 350 },
+            { name: "PENNA BIC 4 COLORI", qty: 1, priceCents: 250 }
+        ],
+        priceCents: 2450
+    },
+    {
+        id: 30,
+        items: [
+            { name: "CAVIETTO USB-C", qty: 1, priceCents: 999 },
+            { name: "CARICATORE GAN", qty: 1, priceCents: 2490 },
+            { name: "COVER SMARTPHONE", qty: 1, priceCents: 1290 }
+        ],
+        priceCents: 4779
+    },
+    {
+        id: 31,
+        items: [
+            { name: "SMARTWATCH FIT", qty: 1, priceCents: 4990 },
+            { name: "CINTURINO EXTRA", qty: 1, priceCents: 990 }
+        ],
+        priceCents: 5980
+    },
+    {
+        id: 32,
+        items: [
+            { name: "GIN BOMBAY 70CL", qty: 1, priceCents: 2190 },
+            { name: "TONICA FEVER 4P", qty: 2, priceCents: 550 },
+            { name: "GHIACCIO 2KG", qty: 1, priceCents: 250 }
+        ],
+        priceCents: 3540
+    },
+    {
+        id: 33,
+        items: [
+            { name: "FILETTO SALMONE", qty: 2, priceCents: 1390 },
+            { name: "ASPARAGI MAZZO", qty: 1, priceCents: 450 },
+            { name: "VINO BIANCO DOC", qty: 1, priceCents: 1250 }
+        ],
+        priceCents: 4480
+    },
+    {
+        id: 34,
+        items: [
+            { name: "ALIMENTO INFANZIA", qty: 6, priceCents: 220 },
+            { name: "PANNOLINI JUMBO", qty: 1, priceCents: 1690 },
+            { name: "SALVIETTE UMID.", qty: 3, priceCents: 250 }
+        ],
+        priceCents: 3760
+    },
+    {
+        id: 35,
+        items: [
+            { name: "TV LED 32 POLLICI", qty: 1, priceCents: 14900 },
+            { name: "STAFFA MURO", qty: 1, priceCents: 1990 }
+        ],
+        priceCents: 16890
     }
 ];

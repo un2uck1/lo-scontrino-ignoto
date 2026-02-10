@@ -1,3 +1,4 @@
+
 import { store } from './store.js';
 import { UI } from './ui.js';
 import { Game } from './game.js';
@@ -99,16 +100,12 @@ const APP = {
     nextRound() {
         if (store.state.currentRound < store.state.totalRounds) {
             // Move to next
-            const nextIndex = store.state.currentRound; // Current passed rounds = index for next from 0-based array?
-            // Store.currentRound is 1-based (starts at 1).
-            // So if currentRound is 1, we just finished round 1. Next is round 2.
-            // But array index for round 2 is 1.
-
+            const nextIndex = store.state.currentRound;
             const nextLvlId = store.state.roundsData[store.state.currentRound];
             const nextLevel = gameData.find(l => l.id === nextLvlId);
 
             if (nextLevel) {
-                store.state.currentRound++; // Increment validly
+                store.nextRound(nextLevel);
                 this.startLevel(nextLevel);
             } else {
                 this.finishGame();
@@ -124,11 +121,12 @@ const APP = {
     },
 
     updateHeader() {
-        // We need to implement this in UI
-        const headerTitle = document.querySelector('header h1');
-        if (headerTitle) {
-            headerTitle.innerHTML = `ROUND ${store.state.currentRound}/${store.state.totalRounds} <span style="opacity:0.4; margin:0 8px;">|</span> SCORE: ${store.state.score}`;
-        }
+        UI.updateHeader(
+            store.state.currentRound,
+            store.state.totalRounds,
+            store.state.score,
+            store.state.roundResults
+        );
     },
 
     updateKeypadState() {
@@ -136,20 +134,6 @@ const APP = {
     },
 
     setupEventListeners() {
-        // Keypad
-        const keypad = document.getElementById('keypad');
-        if (keypad) {
-            keypad.addEventListener('click', (e) => {
-                const btn = e.target.closest('.key');
-                if (!btn) return;
-
-                btn.style.transform = "scale(0.95)";
-                setTimeout(() => btn.style.transform = "", 100);
-
-                this.handleInput(btn.dataset.key);
-            });
-        }
-
         // Keyboard
         document.addEventListener('keydown', (e) => {
             if (store.state.status !== 'PLAYING') return;
