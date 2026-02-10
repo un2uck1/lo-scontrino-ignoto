@@ -1,0 +1,799 @@
+/* Global Variables & Theme */
+:root {
+    --color-correct: #6aaa64;
+    --color-present: #c9b458;
+    --color-absent: #787c7e;
+    --color-standard: #ffffff;
+    --color-text: #1a1a1b;
+    --key-bg: #e3e6ea;
+    --key-active: #c8cdd3;
+    --key-used: #cfd2d6;
+    --border-color: #d3d6da;
+    --bg-color: #e0e5ec;
+    /* Neumorphic Base */
+    --modal-overlay: rgba(0, 0, 0, 0.4);
+
+    /* Receipt Specifics */
+    --receipt-bg: #fffcf5;
+    --receipt-text: #2a2a2a;
+    --receipt-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.02);
+}
+
+/* Dark Mode Variables */
+body.dark-mode {
+    --color-text: #e8eaed;
+    --key-bg: #4a4a4c;
+    --key-active: #6e6e70;
+    --key-used: #2c2c2e;
+    --border-color: #3a3a3c;
+    --bg-color: #121213;
+    --color-standard: #121213;
+    --modal-overlay: rgba(0, 0, 0, 0.7);
+    --receipt-bg: #2a2a2a;
+    --receipt-text: #e0e0e0;
+    --receipt-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+}
+
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--color-text);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    transition: background-color 0.4s ease, color 0.4s ease;
+    /* Subtle noise texture */
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+}
+
+/* Header */
+header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 60px;
+    position: relative;
+    flex-shrink: 0;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+body.dark-mode header {
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+header h1 {
+    font-family: 'Courier Prime', monospace;
+    font-weight: 700;
+    font-size: 1.5rem;
+    letter-spacing: -0.5px;
+    margin: 0;
+    text-transform: uppercase;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+header button {
+    transition: all 0.2s ease;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text);
+    opacity: 0.8;
+}
+
+header button:hover {
+    background-color: rgba(128, 128, 128, 0.1);
+    transform: scale(1.1);
+    opacity: 1;
+}
+
+/* Game Container */
+#game-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px 15px;
+    overflow-y: auto;
+    gap: 25px;
+    scrollbar-width: none;
+    /* Hide scrollbar for cleaner look */
+}
+
+#game-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* ==== REALISTIC RECEIPT ==== */
+#receipt-preview {
+    width: 340px;
+    max-width: 100%;
+    background: var(--receipt-bg);
+    color: var(--receipt-text);
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.75rem;
+    box-shadow: var(--receipt-shadow);
+    position: relative;
+    padding: 20px 24px 40px 24px;
+    transform-origin: top center;
+    animation: receiptPrint 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+
+    /* Paper Texture */
+    background-image:
+        linear-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+    background-size: 100% 3px, 3px 100%;
+}
+
+/* Improved Zig Zag Edge using Mask */
+#receipt-preview {
+    -webkit-mask-image:
+        linear-gradient(to bottom, transparent 0%, black 10px, black calc(100% - 10px), transparent 100%),
+        radial-gradient(circle at 10px 10px, black 70%, transparent 71%),
+        radial-gradient(circle at 10px -10px, black 70%, transparent 71%);
+    /* Fallback to CSS Shapes for zig zag if mask is complex to implement perfectly cross-browser in one go, 
+       but let's stick to the reliable pseudo-element method for jagged edges which is universally supported */
+    -webkit-mask-image: none;
+    /* Resetting to use pseudo elements */
+}
+
+/* Realistic Jagged Edge */
+#receipt-preview::before,
+#receipt-preview::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 12px;
+    background-color: var(--bg-color);
+    /* Matches body bg to look transparent */
+    background-image: linear-gradient(135deg, var(--receipt-bg) 50%, transparent 50%), linear-gradient(45deg, var(--receipt-bg) 50%, transparent 50%);
+    background-position: top left;
+    background-repeat: repeat-x;
+    background-size: 16px 16px;
+    z-index: 2;
+}
+
+#receipt-preview::before {
+    top: -8px;
+    transform: rotate(180deg);
+}
+
+#receipt-preview::after {
+    bottom: -8px;
+}
+
+.receipt-header {
+    text-align: center;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.store-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+.store-subtitle {
+    font-size: 0.65rem;
+    opacity: 0.6;
+    margin-bottom: 10px;
+}
+
+.receipt-divider {
+    width: 100%;
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.3);
+    margin: 12px 0;
+    height: 0;
+    opacity: 0.5;
+}
+
+body.dark-mode .receipt-divider {
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+}
+
+.receipt-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    opacity: 0.8;
+    margin-bottom: 15px;
+}
+
+.items-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    font-size: 0.75rem;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.product-items {
+    min-height: 60px;
+}
+
+.product-items .flex {
+    display: flex;
+    justify-content: space-between;
+    margin: 8px 0;
+    font-size: 0.8rem;
+    line-height: 1.4;
+}
+
+.product-items .flex span:first-child {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.receipt-footer {
+    text-align: center;
+    margin-top: 25px;
+}
+
+.total-label {
+    font-weight: 800;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    border-top: 2px dashed var(--receipt-text);
+    border-bottom: 2px dashed var(--receipt-text);
+    padding: 12px 0;
+    display: inline-block;
+    width: 100%;
+}
+
+.receipt-thanks {
+    font-size: 0.75rem;
+    margin-top: 15px;
+    font-style: italic;
+    opacity: 0.8;
+}
+
+/* Barcode */
+.barcode {
+    height: 45px;
+    width: 90%;
+    margin: 20px auto 5px auto;
+    background: repeating-linear-gradient(90deg,
+            var(--receipt-text) 0px,
+            var(--receipt-text) 2px,
+            transparent 2px,
+            transparent 5px,
+            var(--receipt-text) 5px,
+            var(--receipt-text) 7px,
+            transparent 7px,
+            transparent 11px,
+            var(--receipt-text) 11px,
+            var(--receipt-text) 12px,
+            transparent 12px,
+            transparent 16px);
+    opacity: 0.8;
+}
+
+/* Stamp Effect */
+.receipt-stamp {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-15deg) scale(0);
+    border: 4px solid;
+    padding: 10px 20px;
+    font-size: 2rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    font-family: 'Courier Prime', monospace;
+    /* Stencil look preferred but Courier works */
+    letter-spacing: 5px;
+    opacity: 0;
+    z-index: 10;
+    border-radius: 8px;
+    mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' opacity='0.8'/%3E%3C/svg%3E");
+    /* Simple CSS grunge effect using mix-blend-mode if possible */
+    mix-blend-mode: multiply;
+    animation: stampIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+body.dark-mode .receipt-stamp {
+    mix-blend-mode: normal;
+}
+
+.is-win {
+    color: #d32f2f;
+    /* Red ink usually looks more like a stamp */
+    border-color: #d32f2f;
+}
+
+.is-loss {
+    color: #1a1a1b;
+    border-color: #1a1a1b;
+}
+
+@keyframes stampIn {
+    0% {
+        transform: translate(-50%, -50%) rotate(-15deg) scale(3);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) rotate(-15deg) scale(1);
+        opacity: 0.7;
+    }
+}
+
+/* Wordle Grid */
+#grid-board {
+    display: grid;
+    grid-template-rows: repeat(5, 1fr);
+    gap: 8px;
+    width: 320px;
+    max-width: 100%;
+}
+
+.guess-row {
+    display: flex;
+    height: 52px;
+    gap: 8px;
+}
+
+/* Tiles - PREMIUM LOOK */
+.tile {
+    width: 100%;
+    border: 0;
+    background-color: #ffffff;
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+    border-radius: 8px;
+    user-select: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: 'Inter', sans-serif;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    position: relative;
+    overflow: hidden;
+}
+
+body.dark-mode .tile {
+    background-color: #2a2a2a;
+    color: #fff;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+}
+
+/* Active State (Typing) */
+.tile[data-state='active'] {
+    border: 2px solid #878a8c;
+    box-shadow: none;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Completed States */
+.tile[data-state='correct'] {
+    background-color: var(--color-correct);
+    color: white;
+    box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.2);
+}
+
+.tile[data-state='present'] {
+    background-color: var(--color-present);
+    color: white;
+    box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.2);
+}
+
+.tile[data-state='absent'] {
+    background-color: var(--color-absent);
+    color: white;
+}
+
+/* Keypad - SOFT 3D */
+#keypad {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: transparent;
+    flex-shrink: 0;
+    padding-bottom: 30px;
+}
+
+.key-row {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.key {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 1.3rem;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    height: 56px;
+    border-radius: 12px;
+    cursor: pointer;
+    user-select: none;
+    background-color: var(--key-bg);
+    color: var(--color-text);
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 0 #b5b9bd;
+    /* 3D effect shadow */
+    position: relative;
+    top: 0;
+}
+
+body.dark-mode .key {
+    box-shadow: 0 4px 0 #2a2a2c;
+}
+
+.key:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 0 transparent;
+    background-color: var(--key-active);
+}
+
+.key.big-key {
+    flex: 1.5;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    font-weight: 800;
+}
+
+.key.used {
+    background-color: var(--key-used);
+    opacity: 1;
+    color: rgba(0, 0, 0, 0.4);
+    box-shadow: 0 2px 0 #b5b9bd;
+    transform: translateY(2px);
+}
+
+body.dark-mode .key.used {
+    color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 0 #2a2a2c;
+}
+
+/* Modals - GLASSMORPHISM SUPREME */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content {
+    background: rgba(255, 255, 255, 0.95);
+    color: #1a1a1b;
+    padding: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    max-width: 90%;
+    width: 420px;
+    max-height: 85vh;
+    overflow-y: auto;
+    border-radius: 24px;
+    position: relative;
+    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body.dark-mode .modal-content {
+    background: rgba(30, 30, 32, 0.95);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-content h2 {
+    font-weight: 800;
+    margin-top: 0;
+    text-transform: uppercase;
+    font-size: 1.8rem;
+    letter-spacing: -1px;
+}
+
+.close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.05);
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: inherit;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.close-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+body.dark-mode .close-btn {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-cols: repeat(4, 1fr);
+    gap: 15px;
+    margin: 25px 0;
+    text-align: center;
+}
+
+.stat-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 8px;
+    opacity: 0.6;
+    font-weight: 600;
+}
+
+/* Distribution Bars */
+.guess-distribution {
+    margin: 25px 0;
+    width: 100%;
+}
+
+.distribution-row {
+    display: flex;
+    align-items: center;
+    margin: 6px 0;
+    font-size: 0.9rem;
+}
+
+.distribution-label {
+    width: 20px;
+    font-weight: bold;
+    opacity: 0.7;
+}
+
+.distribution-bar {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.05);
+    margin-left: 10px;
+    height: 24px;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+body.dark-mode .distribution-bar {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Play Button */
+.play-btn {
+    width: 100%;
+    background-color: var(--color-text);
+    color: var(--bg-color);
+    border: none;
+    padding: 16px;
+    border-radius: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-top: 15px;
+    transition: transform 0.2s, opacity 0.2s;
+    box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.2);
+}
+
+.play-btn:hover {
+    transform: translateY(-2px);
+    opacity: 0.95;
+}
+
+.play-btn:active {
+    transform: translateY(0);
+}
+
+/* Animations */
+@keyframes receiptPrint {
+    0% {
+        opacity: 0;
+        transform: translateY(-80px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(40px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes flip {
+    0% {
+        transform: rotateX(0);
+    }
+
+    45% {
+        transform: rotateX(90deg);
+    }
+
+    55% {
+        transform: rotateX(90deg);
+    }
+
+    100% {
+        transform: rotateX(0);
+    }
+}
+
+@keyframes pop {
+    0% {
+        transform: scale(1);
+    }
+
+    40% {
+        transform: scale(1.15);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    20% {
+        transform: translateX(-6px);
+    }
+
+    40% {
+        transform: translateX(6px);
+    }
+
+    60% {
+        transform: translateX(-4px);
+    }
+
+    80% {
+        transform: translateX(4px);
+    }
+}
+
+.animate-flip {
+    animation: flip 0.6s ease-in-out backwards;
+}
+
+.animate-shake {
+    animation: shake 0.4s ease-in-out;
+}
+
+.animate-pulse {
+    animation: pop 0.4s ease-in-out;
+}
+
+/* Utilities */
+.hidden {
+    display: none !important;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.w-full {
+    width: 100%;
+}
+
+/* Responsive */
+@media (max-height: 700px) {
+    #game-container {
+        padding: 10px;
+        gap: 15px;
+    }
+
+    #receipt-preview {
+        padding: 15px 15px 25px 15px;
+        width: 300px;
+    }
+
+    .key {
+        height: 48px;
+    }
+
+    header {
+        height: 50px;
+    }
+
+    .store-name {
+        font-size: 1.1rem;
+    }
+
+    .tile {
+        font-size: 1.1rem;
+    }
+
+    .modal-content {
+        padding: 20px;
+    }
+}
