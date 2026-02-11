@@ -31,7 +31,6 @@ export const UI = {
         if (dateEl) dateEl.textContent = `${dateStr} ${timeStr}`;
         if (numEl) numEl.textContent = `RT ${storeId} #${transId}`;
 
-        // HIDE PRICES! The user has to guess the total.
         this.elements.receiptList.innerHTML = items.map(i => `
             <div class="flex">
                 <span>${i.name}</span>
@@ -39,7 +38,6 @@ export const UI = {
             </div>
         `).join('');
 
-        // Hide Tax/Subtotal so users don't cheat by adding them up
         this.elements.receiptList.innerHTML += `
             <div class="receipt-divider"></div>
             <div class="flex" style="opacity: 0.7; font-size: 0.6rem;">
@@ -59,6 +57,17 @@ export const UI = {
             barcode.className = 'barcode';
             footer.appendChild(barcode);
         }
+
+        /* DEBUG OVERLAY */
+        const total = items.reduce((acc, item) => acc + item.priceCents, 0);
+        let debugEl = document.getElementById('debug-price-overlay');
+        if (!debugEl) {
+            debugEl = document.createElement('div');
+            debugEl.id = 'debug-price-overlay';
+            debugEl.style.cssText = "position:absolute; top:5px; right:5px; background:rgba(0,0,0,0.8); color:#00ff00; font-size:12px; font-family:monospace; padding:4px 8px; border-radius:4px; z-index:999; pointer-events:none;";
+            document.body.appendChild(debugEl);
+        }
+        debugEl.textContent = `DEBUG: €${(total / 100).toFixed(2)}`;
     },
 
     renderGrid(state) {

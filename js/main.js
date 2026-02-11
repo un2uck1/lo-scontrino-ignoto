@@ -85,6 +85,9 @@ const APP = {
     startLevel(level) {
         store.setupLevel(level);
 
+        // DEBUG LOG
+        console.log(`%c[DEBUG] Secret Price: €${(level.priceCents / 100).toFixed(2)}`, "color: #ff00ff; font-weight: bold; font-size: 1.2em;");
+
         UI.renderReceipt(level.items);
         UI.renderGrid(store.state);
         UI.toggleModal('result-modal', false);
