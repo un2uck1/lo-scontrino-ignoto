@@ -115,60 +115,66 @@
 
             <div class="instructions">
                 <h1>Scontrino Ignoto</h1>
+                <div
+                    style="font-size: 0.8rem; text-transform: uppercase; color: #6b7280; font-weight: 700; margin-bottom: 10px;">
+                    Arcade Mode</div>
                 <hr class="border-gray-300 my-2">
-                <p>Indovina il PREZZO SCONTRINO in 5 tentativi.</p>
-                <p>Usa la tua tastiera fisica per digitare.</p>
-                <p>Premi <strong>INVIO</strong> per confermare.</p>
+
+                <p class="mb-2">🛒 <strong>Come si gioca:</strong></p>
+                <ul class="list-disc pl-5 mb-4 space-y-1">
+                    <li>Ti viene mostrata una lista della spesa ma <strong>i prezzi dei singoli articoli sono
+                            NASCOSTI!</strong> 🙈</li>
+                    <li>Il tuo obiettivo è stimare il <strong>TOTALE</strong> dello scontrino.</li>
+                    <li>Hai <strong>5 tentativi</strong> per indovinare.</li>
+                </ul>
+
+                <p class="mb-2">🎯 <strong>Vittoria:</strong></p>
+                <p class="mb-4">Non serve la precisione assoluta! Vinci il round se indovini con un margine di errore
+                    del <strong>5%</strong>.</p>
+                <p class="text-xs text-gray-500 mb-4">(Esempio: Se il totale è €20.00, vinci tra €19.00 e €21.00)</p>
 
                 <div class="examples">
-                    <p><strong>Esempi</strong></p>
+                    <p><strong>Esempi di Risposta</strong></p>
 
                     <div class="example">
                         <div class="row">
-                            <div class="small-tile" data-state="correct">1</div>
-                            <div class="small-tile">2</div>
+                            <div class="small-tile" data-state="correct">2</div>
+                            <div class="small-tile">0</div>
                             <div class="small-tile">.</div>
-                            <div class="small-tile">5</div>
+                            <div class="small-tile">0</div>
                             <div class="small-tile">0</div>
                         </div>
-                        <p>Il numero <strong>1</strong> è corretto al posto giusto.</p>
+                        <p><strong>Esatto!</strong> (O molto vicino)</p>
                     </div>
 
                     <div class="example">
                         <div class="row">
                             <div class="small-tile">1</div>
-                            <div class="small-tile">2</div>
-                            <div class="small-tile" data-state="present">⬇️</div>
                             <div class="small-tile">5</div>
+                            <div class="small-tile" data-state="present">⬇️</div>
+                            <div class="small-tile">0</div>
                             <div class="small-tile">0</div>
                         </div>
-                        <p>Il prezzo segreto è <strong>PIÙ BASSO</strong>.</p>
+                        <p>Il totale reale è <strong>più basso</strong>.</p>
                     </div>
 
                     <div class="example">
                         <div class="row">
+                            <div class="small-tile">1</div>
                             <div class="small-tile">0</div>
-                            <div class="small-tile">5</div>
                             <div class="small-tile">.</div>
                             <div class="small-tile" data-state="present">⬆️</div>
                             <div class="small-tile">0</div>
                         </div>
-                        <p>Il prezzo segreto è <strong>PIÙ ALTO</strong>.</p>
+                        <p>Il totale reale è <strong>più alto</strong>.</p>
                     </div>
                 </div>
 
-                <div class="examples">
-                    <h2>Regole</h2>
-                    <p>Devi indovinare il prezzo totale dei prodotti elencati sopra.</p>
-                    <ul>
-                        <li>Se la casella diventa <strong>VERDE</strong>, hai indovinato!</li>
-                        <li>Se appare una freccia <strong>GIALLA</strong>, ti dice se il prezzo reale è più alto o più
-                            basso.</li>
-                    </ul>
+                <div class="mt-4 p-3 bg-gray-100 rounded text-sm">
+                    <p><strong>Obiettivo:</strong> Completa 5 Round con il punteggio più alto possibile!</p>
                 </div>
 
                 <div class="text-xs text-gray-500 mt-8 text-center">
-                    <p>Ispirato a Wordle ma per la spesa.</p>
                     <p>&copy; 2026 Lo Scontrino Ignoto</p>
                 </div>
             </div>

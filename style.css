@@ -9,9 +9,10 @@
     --bg-color: #f3f4f6;
 
     /* Receipt */
-    --receipt-bg: #ffffff;
-    --receipt-text: #374151;
-    --receipt-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --receipt-bg: #fffbf0;
+    /* Slightly warmer paper tone */
+    --receipt-text: #2d3436;
+    --receipt-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.15), 0 5px 10px -3px rgba(0, 0, 0, 0.1);
 
     /* Keypad Colors - REMOVED but defined for tiles */
     --key-bg: #ffffff;
@@ -90,15 +91,17 @@ body.dark-mode header button:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Game Container */
+/* Game Container - Compacted for better fit */
 #game-container {
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 20px;
-    gap: 40px;
+    /* Centered vertically */
+    padding: 10px;
+    gap: 20px;
+    /* Reduced gap */
     overflow-y: auto;
     scrollbar-width: none;
 }
@@ -170,18 +173,24 @@ body.dark-mode .progress-segment {
 
 /* ==== RECEIPT LOGIC ==== */
 #receipt-preview {
-    width: 340px;
+    width: 320px;
+    /* Slightly narrower */
     max-width: 100%;
     position: relative;
     background: var(--receipt-bg);
     color: var(--receipt-text);
     font-family: 'Courier Prime', monospace;
-    font-size: 0.85rem;
-    padding: 25px 25px 40px;
+    font-size: 0.8rem;
+    /* Slightly smaller text */
+    padding: 20px 20px 30px;
+    /* Compact padding */
     box-shadow: var(--receipt-shadow);
     border-radius: 2px;
     transform-origin: top center;
     animation: receiptSlide 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+    /* Make it look like paper */
+    background-image: linear-gradient(rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 100%);
 }
 
 /* Realistic Jagged Edge */
@@ -197,48 +206,60 @@ body.dark-mode .progress-segment {
     background-position: bottom;
 }
 
+/* Top Jagged Edge (Optional, maybe too much noise?) - let's stick to bottom */
+
 .receipt-header {
     text-align: center;
     border-bottom: 1px dashed var(--color-text-subtle);
-    padding-bottom: 15px;
-    margin-bottom: 15px;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
 }
 
 .store-name {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 700;
-    margin-bottom: 5px;
+    letter-spacing: -1px;
+    margin-bottom: 2px;
+    text-transform: uppercase;
     color: var(--color-text);
+}
+
+.store-subtitle {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    opacity: 0.7;
+    margin-bottom: 5px;
 }
 
 .product-items .flex {
     display: flex;
     justify-content: space-between;
-    margin: 8px 0;
-    line-height: 1.4;
+    margin: 4px 0;
+    /* Tighter list */
+    line-height: 1.2;
 }
 
 .receipt-footer {
-    margin-top: 20px;
+    margin-top: 15px;
     border-top: 2px solid var(--color-text);
-    padding-top: 15px;
+    padding-top: 10px;
     text-align: center;
 }
 
 .total-label {
     display: block;
     font-weight: 800;
-    font-size: 1rem;
+    font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
 }
 
 .barcode {
-    height: 30px;
-    width: 90%;
-    margin: 20px auto 0;
-    opacity: 0.6;
+    height: 25px;
+    width: 80%;
+    margin: 15px auto 0;
+    opacity: 0.7;
     background: repeating-linear-gradient(90deg, currentColor 0, currentColor 1px, transparent 1px, transparent 3px);
 }
 
@@ -246,26 +267,30 @@ body.dark-mode .progress-segment {
 #grid-board {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
+    /* Tighter rows */
     width: 100%;
-    max-width: 340px;
+    max-width: 320px;
 }
 
 .guess-row {
-    height: 52px;
+    height: 48px;
     position: relative;
 }
+
+/* Smaller rows */
 
 .tile {
     width: 100%;
     height: 100%;
     background: var(--key-bg);
     border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 12px;
+    border-radius: 8px;
+    /* Slightly squarer */
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     font-weight: 600;
     color: var(--color-text);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -455,9 +480,14 @@ body.dark-mode .tile[data-state='active'] {
 @media (max-height: 700px) {
     #game-container {
         padding: 10px;
+        gap: 15px;
     }
 
     #receipt-preview {
-        padding: 20px 20px 30px;
+        padding: 15px 15px 20px;
+    }
+
+    .guess-row {
+        height: 42px;
     }
 }

@@ -4,7 +4,7 @@ const SETTINGS_KEY = 'scontrino_settings_v1';
 export class Settings {
     constructor() {
         this.settings = {
-            darkMode: false,
+            darkMode: false, // Default OFF
             soundEnabled: true,
             hapticEnabled: true,
             highContrast: false
@@ -24,11 +24,7 @@ export class Settings {
             console.error('Failed to load settings', e);
         }
 
-        // Check system preference for dark mode on first visit
-        if (stored === null && window.matchMedia) {
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            this.settings.darkMode = prefersDark;
-        }
+        // Removed system preference check to ensure light mode default unless user sets otherwise
     }
 
     save() {
